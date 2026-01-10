@@ -28,5 +28,5 @@ float4 Execute(float2 uv)
     bubbleMask *= verticalGradient;
     bubbleMask = step(0.5, bubbleMask);
 
-    return float4(1.0, 1.0, 1.0, bubbleMask);
+    return float4(0.56, 0.73, 0.91, bubbleMask);
 }

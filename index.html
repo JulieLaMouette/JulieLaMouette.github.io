@@ -26,6 +26,8 @@
 		<script src="src/scripts/shader-renderer.js" defer></script>
 		<script src="src/scripts/scripts.js" defer></script>
 		<script src="src/scripts/effects.js" defer></script>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 	
 	</head>
 
@@ -35,23 +37,26 @@
 
 		<!-- Background -->
 		<div class="parallax parallax-back" data-width="0.67" data-speed="0.3">
-			<img src="src/img/parallax_01.png" />
-			<img src="src/img/parallax_01.png" />
+			<div class="parallax-img" style="background-image: url('src/img/parallax_01.png');"></div>
 		</div>
 
 		<div class="page">
 			<div class="background-wrapper">
+				
 				<img src="src/img/body-back-top.png" class="bg-top" />
-				<div class="top-gradient"></div>
-				<div class="bg-mid">
+				
+				<div class="mid-cell">
+					<div class="bg-mid"></div>
+					<div class="content" style="height: 3000px;">
+						<h1>La volière</h1>
+						test
+					</div>
+
+					<div class="bubble-effect" width="150" height="150"></div>
+
 				</div>
+				
 				<img src="src/img/body-back-bot.png" class="bg-bot" />
-
-				<!-- Content -->
-				<div class="content">
-
-					<h1>La volière</h1>
-				</div>
 			</div>
 		</div>
 
@@ -60,8 +65,7 @@
 	</div>
 
 
-	<!-- Effects -->
-	 <div class="bubble-effect" width="150" height="150"></div>
+	<!-- Effect canvas -->
 	<canvas width="1024" height="1024" id="overlay-canvas" class="overlay-canvas"></canvas>
 
   </body>

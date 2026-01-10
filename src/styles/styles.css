@@ -26,21 +26,22 @@ body {
 
 .content
 {
-	position: absolute;
+	grid-row: 2;
+	position: relative;
 	justify-self: center;
 	margin: auto;
 	text-align: center;
 	padding: 20px;
-	margin-top: 80px;
+	margin-top: -87%;
 }
 
 h1
 {
 	font-family: 'Robusta', sans-serif;
 	color:#e65625;
-	font-size: 150px;
-	font-style: regular;
 	font-weight: 100;
+
+	font-size: clamp(16px, 10vw, 140px);
 }
 
 .top-gradient {
@@ -58,6 +59,7 @@ h1
 }
 
 .bg-top {
+	grid-row: 1;
 	background-image: url('/src/img/white-top-gradient.png');
 	background-size: contain;
 	width: 100%;
@@ -65,12 +67,14 @@ h1
 }
 
 .bg-bot {
+	grid-row: 3;
 	width: 100%;
 	height: auto;
 }
 
 
 .bg-mid {
+	grid-row: 2;
 	background-image: url('/src/img/body-back-mid.png');
 	background-size: contain;
 	background-repeat: repeat-y;
@@ -88,6 +92,7 @@ h1
 
 .parallax {
 	position: absolute;
+	height: 100%;
 	left: 50%;
 	top: 0;
 	transform: translateX(-50%);
@@ -96,9 +101,12 @@ h1
 	overflow: hidden;
 }
 
-.parallax img {
-	display: block;
+.parallax-img {
 	width: 100%;
+	height: 100%;
+    background-repeat: repeat-y;
+    background-position: top center;
+    background-size: contain;
 }
 
 .parallax-back {
