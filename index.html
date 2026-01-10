@@ -1,14 +1,149 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>la-voliere</title>
-  </head>
+	<head>
+  
+		<meta charset="utf-8">
+		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+		
+		<meta property="og:title" content="Sam's Backpack" />
+		<meta property="og:description" content="" />
+		<meta property="og:image" content="/media/banner.jpg" />
+		<meta property="og:url" content="https://niwala.github.io/" />
+		
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:title" content="Sam's Backpack">
+		<meta name="twitter:description" content="">
+		<meta name="twitter:image" content=".media/banner.jpg">
+		
+		<title>Sam's Backpack</title>
+		<link rel="icon" href="/src/main/favicon.ico" type="image/x-icon">
+
+		<link rel="stylesheet" href="/src/main/styles/styles.css" type="text/css"/>
+		<link rel="stylesheet" href="/src/main/styles/notion-styles.css" type="text/css"/>
+		
+		<script>
+			const root = "src/main/"
+		</script>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+
+		<script src="/src/main/scripts/circle.js" defer></script>
+		<script src="/src/main/scripts/gl-matrix-min.js" defer></script>
+		<script src="/src/main/scripts/renderer.js" defer></script>
+		<script src="/src/main/scripts/loader.js" defer></script>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	</head>
+
   <body>
-    La volière
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+
+
+	<div class="horizontal" id="main-column">
+
+		
+		<!-- Circle + Sam's Backpack logo -->
+		<div id="circle-container">
+			<div id="circle" style="width: 300px; height: 300px;">
+				<div class="main-logo"></div>
+			</div>
+		 </div>
+
+
+		<div id="main-column-content">
+			<!--Sections-->
+
+			<div class="section" style="top: 1350px;">
+				<div class="section-content">
+					<div class="section-back" style="background-color: #6b9e53;rotate: 6deg;">
+
+					</div>
+				</div>
+			</div>
+
+			<div class="section" style="top: 900px;">
+				<div class="section-content">
+					<div class="section-back" style="background-color: #a85858;rotate: -12deg;">
+
+					</div>
+				</div>
+			</div>
+
+			<div class="section" style="top: 450px;">
+				<div class="section-content">
+					<div class="section-back" style="background-color: #5a8da4; rotate: 8deg;">
+
+					</div>
+				</div>
+			</div>
+
+			<div class="section" style="top: 0px;">
+				<div class="section-content">
+					<div class="section-back" style="rotate: -12deg;">
+						
+						<!--Background-->
+						<div class="section-background" style="rotate: 12deg; background-image: url(main/media/main-background.png);"></div>
+
+						<!--Labels-->
+						<div id="main-title" style="flex-direction: column; translate: 0px 0px;">
+							<span class="main-title">Sam's</span>
+							<span class="main-title">Backpack</span>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+			
+
+			<!--Space-->
+			<div style="height: 3000px;"></div>
+
+			<!-- Banner -->
+			<div id="banner">
+				
+				<!-- Home button -->
+					<h1 class="main-header">Sam's Backpack</h1>
+
+				<div style="width: 128px;">	</div>
+
+			</div>
+			
+
+			<article id="homepage">
+			
+				<!-- Main content -->
+				<div class="centred">
+
+					<!-- Flora pocket -->
+					<button class="project-button">
+						<div class="horizontal">
+							<div class="flora-icon"></div>
+							<div class="vertical">
+								<h2>Flora Pocket</h2>
+								<span>Tool for creating and placing foliage in Unity</span>
+							<div>
+						</div>
+					</button>
+
+					<!-- About me -->
+					<button class="project-button">
+						<div class="horizontal">
+							<div class="about-me-icon"></div>
+							<div class="vertical">
+								<h2>About me</h2>
+								<span>My projects, my career and how to contact me</span>
+							<div>
+						</div>
+					</button>
+
+				</div>
+			</article>
+			
+		</div>
+	</div>
+
+	<canvas width="1024" height="1024" id="overlay-canvas" class="overlay-canvas"></canvas>
+
   </body>
 </html>

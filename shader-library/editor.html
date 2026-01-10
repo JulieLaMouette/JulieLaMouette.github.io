@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+	<head>
+  
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<meta property="og:title" content="Shader Editor" />
+		<meta property="og:description" content="Ce site a pour objectif de référencer des fonctions basiques utilisables dans les shaders" />
+		<meta property="og:image" content="https://niwala.github.io/media/banner.jpg" />
+		<meta property="og:url" content="https://niwala.github.io/" />
+		
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:title" content="Shader Editor">
+		<meta name="twitter:description" content="Ce site a pour objectif de référencer des fonctions basiques utilisables dans les shaders">
+		<meta name="twitter:image" content="https://niwala.github.io/media/banner.jpg">
+		
+		<title>Shader Editor</title>
+		<link rel="icon" href="./favicon.ico" type="image/x-icon">
+		
+		<link rel="stylesheet" href="./styles/editor.css" type="text/css"/>
+		<link rel="stylesheet" href="./styles/field-styles.css" type="text/css"/>
+		<link rel="stylesheet" href="./styles/styles.css" type="text/css"/>
+		<link rel="stylesheet" href="./styles/prism.css" type="text/css"/>
+		<link rel="stylesheet" href="./styles/switch-buttons.css" type="text/css"/>
+		<link rel="stylesheet" href="./styles/notion-styles.css" type="text/css"/>
+		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+		
+		<script src="./scripts/packer.js"></script>
+		<script src="./scripts/prism.js" defer></script>
+		<script src="./scripts/notion-reader.js"></script>
+		<script src="./scripts/gl-matrix-min.js" defer></script>
+		<script src="./scripts/renderer.js" defer></script>
+		<script src="./scripts/function-structs.js" defer></script>
+		<script src="./scripts/editor.js" defer></script>
+	
+	</head>
+
+  <body>
+
+	<canvas width="1024" height="1024" id="overlay-canvas" class="overlay-canvas"></canvas>
+  
+	<!-- Banner -->
+	<div id="banner">
+		<div class="centred" style="justify-content: space-between; align-items: center; flex-direction: row;">
+		
+			<!-- Left part -->
+			<div class="vertical">
+			
+				<!-- HEAJ logo -->
+				<div>
+					<a href="https://www.heaj.be/en/"><div class="main-logo"></div></a>
+				</div>
+				
+				<!-- Home button -->
+				<button class="transparent-button" onclick="GoToLibrary(event)" onauxclick="GoToLibrary(event)">
+					<h1 class="main-header">Shader Editor</h1>
+				</button>
+
+			</div>	
+		</div>
+	</div>
+
+	
+	<div id="text-size" class="format-code"></div>
+
+	<!-- Popup panel-->
+	<div id="popup-panel">
+	
+		<!-- Layout -->
+		<div id="layout-section" class="vertical" style="display: none;">
+			<div class="popup-panel-header">Editor layout</div>
+			<div class="horizontal"><button class="img-button"><img class="icon" src="./media/layout-code-vertical.png"></button><span class="button-side-label">Vertical</span></div>
+			<div class="horizontal"><button class="img-button"><img class="icon" src="./media/layout-code-horizontal.png"></button><span class="button-side-label">Horizontal</span></div>
+			<div class="horizontal"><button class="img-button"><img class="icon" src="./media/layout-code-stack.png"></button><span class="button-side-label">Stack</span></div>
+		</div>
+
+		<!-- Info -->
+		<div id="info-section" class="vertical" style="display: none;">
+			<div class="popup-panel-header">Shader info</div>
+			<span>The code executed is GLSL, but for the sake of comfort and educational demonstrations, the editor is compatible with most HLSL keywords.</span>
+			<div class="separator"></div>
+			<span><b>Uniforms :</b> time, screenSize, mousePosition</span>
+			<span><b>Constants :</b> PI, TAU</span>
+			<span><b>Functions :</b> hash, noise, smin, hash, rot2D</span>
+			<div class="separator"></div>
+			<lu>
+				<li>uv.xy : Layout Uvs</li>
+				<li>uv.zw : Normalized Uvs</li>
+			</lu>
+			<div class="separator"></div>
+			<div><b>Attributes</b></div>
+			<span>You can specify attributes to create fields exposed to users. You must always specify a default value.
+				<lu>
+					<li>[Range(default, min, max)]</li>
+					<li>[Float(default)]</li>
+					<li>[Toggle(default)]</li>
+					<li>[Color(default)]</li>
+				</lu>
+			</span>
+		</div>
+
+		<!-- Examples -->
+		<div id="examples-section" class="vertical" style="display: none;">
+			<div class="popup-panel-header" id="examples-btn-list">Examples</div>
+			<button onclick="OpenExample('default')">Default</button>
+			<button onclick="OpenExample('mask')">Mask</button>
+			<button onclick="OpenExample('raymarching')">Raymarching</button>
+			<button onclick="OpenExample('mouse')">Mouse</button>
+			<button onclick="OpenExample('layout-check')">Layout Check</button>
+		</div>
+
+		<!-- Export Properties -->
+		<div class="export-properties vertical" id="export-section"  style="flex-grow: 1;">
+			<div class="popup-panel-header">Export settings</div>
+
+			<!-- Shader Only -->
+			<div class='shader-property' style="flex-grow: 0;">
+				<p style='user-select: none; cursor: pointer;' onmousedown='SwitchToggle("shader-only-toggle")'>Shader Only</p>
+				<label class="toggle-container">
+					<input type="checkbox" onchange="SetShaderOnly(this)" id='shader-only-toggle'>
+					<span class="checkmark"></span>
+				</label>
+			</div>
+
+			<!-- Large layout -->
+			<div class='shader-property' style="flex-grow: 0;">
+				<p style='user-select: none; cursor: pointer;' onmousedown='SwitchToggle("large-layout-toggle")'>Large Layout</p>
+				<label class="toggle-container">
+					<input type="checkbox" onchange="SetLargeLayout(this)" id='large-layout-toggle'>
+					<span class="checkmark"></span>
+				</label>
+			</div>
+
+			<p>Properties position</p>
+			<div class="horizontal">
+				<button class="img-button" onclick="SetPropLayout(this, 0)"><img class="icon" src="./media/layout-code-vertical.png"></button>
+				<button class="img-button" onclick="SetPropLayout(this, 1)"><img class="icon" src="./media/layout-code-vertical.png"></button>
+				<button class="img-button" onclick="SetPropLayout(this, 2)"><img class="icon" src="./media/layout-code-vertical.png"></button>
+				<button class="img-button" onclick="SetPropLayout(this, 3)"><img class="icon" src="./media/layout-code-vertical.png"></button>
+			</div>
+
+			<p>Uv.xy alignement <i>(None = Stretched Uv)</i></p>
+			<div class="vertical">
+				<div class="horizontal">
+					<button class="img-button" onclick="SetLayout(this, 17)" id = "layout-btn-17"><img class="icon" src="./media/layout-code-vertical.png"></button>
+					<button class="img-button" onclick="SetLayout(this, 18)" id = "layout-btn-18"><img class="icon" src="./media/layout-code-vertical.png"></button>
+					<button class="img-button" onclick="SetLayout(this, 20)" id = "layout-btn-20"><img class="icon" src="./media/layout-code-vertical.png"></button>
+				</div>
+				<div class="horizontal">
+					<button class="img-button" onclick="SetLayout(this, 9)" id = "layout-btn-9"><img class="icon" src="./media/layout-code-vertical.png"></button>
+					<button class="img-button" onclick="SetLayout(this, 10)" id = "layout-btn-10"><img class="icon" src="./media/layout-code-vertical.png"></button>
+					<button class="img-button" onclick="SetLayout(this, 12)" id = "layout-btn-12"><img class="icon" src="./media/layout-code-vertical.png"></button>
+				</div>
+				<div class="horizontal">
+					<button class="img-button" onclick="SetLayout(this, 1)" id = "layout-btn-1"><img class="icon" src="./media/layout-code-vertical.png"></button>
+					<button class="img-button" onclick="SetLayout(this, 2)" id = "layout-btn-2"><img class="icon" src="./media/layout-code-vertical.png"></button>
+					<button class="img-button" onclick="SetLayout(this, 4)" id = "layout-btn-4"><img class="icon" src="./media/layout-code-vertical.png"></button>
+				</div>
+			</div>
+			<p>Clamp to square</p>
+
+			<button onclick="ExportIFrame()" class="controls-full">Export iFrame</button>
+		</div>
+
+
+
+	</div>
+
+	<article id="back">
+		<div class="centred">
+			<div class="vertical">
+			
+				<!-- Controls -->
+				<div class="controls-area">
+					<button onclick="ToggleLayoutPanel(this)" class="img-button controls-first"><img class="icon" src="./media/layout-code-vertical.png"></button>
+					<div id="font-size-control"> <input type="range" oninput="SetFontSize(this)" min="16" max="30" value="16" step="0.01" class="slider" id="font-size-slider"><img class="icon" src="./media/font-size-icon.png"></div>
+
+					<div class="spacer" style="flex-grow: 1;"></div>
+
+					<button onclick="ToggleInfoPanel(this)">Info</button>
+					<button onclick="ToggleExamplesPanel(this)">Examples</button>
+					<button onclick="ToggleExportPanel(this)" class="controls-last">Export iFrame</button>
+				</div>
+
+				<div id="scroll-content">
+					<div id="scroll-area">
+						<textarea id="code-editor-area" class="format-code" type="text" spellcheck="false" onkeyup="CompileShader()"></textArea>						
+
+						<div id="overlay">
+							<pre class="line-numbers" id="code-editor-overlay"><code class="language-hlsl format-code" id="code">example-code</code></pre>
+						</div>
+
+					</div>
+				</div>
+
+				<div class="horizontal">
+
+					<div class="vertical example-box" style="border-radius: 5px; margin-right: 20px;">
+
+						<!-- Shader Properties -->
+						<div class="shader-properties" id="shader-properties"></div>
+
+					</div>
+
+					<!-- Preview -->
+					<canvas id="shader-canvas" width="700" height="400" class="shader-editor-preview" style="align-self: start;"></canvas>
+				</div>
+			</div>
+		</div>
+	</article>
+  </body>
+</html>

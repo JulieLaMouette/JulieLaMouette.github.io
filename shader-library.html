@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+	<head>
+  
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<meta property="og:title" content="Shader Library" />
+		<meta property="og:description" content="Ce site a pour objectif de référencer des fonctions basiques utilisables dans les shaders" />
+		<meta property="og:image" content="https://niwala.github.io/media/banner.jpg" />
+		<meta property="og:url" content="https://niwala.github.io/" />
+		
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:title" content="Shader Library">
+		<meta name="twitter:description" content="Ce site a pour objectif de référencer des fonctions basiques utilisables dans les shaders">
+		<meta name="twitter:image" content="https://niwala.github.io/media/banner.jpg">
+		
+		<title>Shader Library</title>
+		<link rel="icon" href="./src/shader-library/favicon.ico" type="image/x-icon">
+		
+		<link rel="stylesheet" href="./src/shader-library/external/coloris/coloris.css" type="text/css"/>
+		<script src="./src/shader-library/external/coloris/coloris.js"></script>
+
+		<link rel="stylesheet" href="./src/shader-library/styles/styles.css" type="text/css"/>
+		<link rel="stylesheet" href="./src/shader-library/styles/field-styles.css" type="text/css"/>
+		<link rel="stylesheet" href="./src/shader-library/styles/prism.css" type="text/css"/>
+		<link rel="stylesheet" href="./src/shader-library/styles/switch-buttons.css" type="text/css"/>
+		<link rel="stylesheet" href="./src/shader-library/styles/notion-styles.css" type="text/css"/>
+		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+
+		<script src="./src/shader-library/scripts/packer.js"></script>
+		<script src="./src/shader-library/scripts/layout.js"></script>
+		<script src="./src/shader-library/scripts/function-structs.js"></script>
+		<script src="./src/shader-library/scripts/notion-structs.js"></script>
+		<script src="./src/shader-library/scripts/notion-reader.js"></script>
+
+		<script src="./src/shader-library/scripts/gl-matrix-min.js" defer></script>
+		<script src="./src/shader-library/scripts/renderer.js" defer></script>
+		<script src="./src/shader-library/scripts/loader.js" defer></script>
+		<script src="./src/shader-library/scripts/prism.js" defer></script>
+	
+	</head>
+
+  <body>
+
+	<canvas width="1024" height="1024" id="function-list-canvas" class="overlay-canvas"></canvas>
+
+	<!-- Context menu -->
+	<div id="menu" class="context-menu">
+	<button onclick="ContextMenuAction('Copy')">Copy shader code</button>
+	<button onclick="ContextMenuAction('Open')">Open in editor</button>
+	</div>
+  
+	<!-- Banner -->
+	<div id="banner">
+		<div class="centred" style="justify-content: space-between; align-items: center; flex-direction: row;">
+		
+			<!-- Left part -->
+			<div class="vertical">
+			
+				<!-- HEAJ logo -->
+				<div>
+					<a href="https://www.heaj.be/en/"><div class="main-logo"></div></a>
+				</div>
+				
+				<!-- Home button -->
+				<button class="transparent-button" onclick="GoHome(event)" onauxclick="GoHome(event)">
+					<h1 class="main-header">Shader Library</h1>
+				</button>
+
+			</div>
+			
+			<!-- Search bar -->
+			<form id="search-form">
+				<input type="text" class="search-bar" id="search-bar" onkeyup="SearchFunction()" placeholder="(F) Search for functions...">
+				<div class="search-bar-list" id="search-bar-list" style="display: none;"></div>
+			</form>			
+		</div>
+	</div>
+
+
+	<!-- Loading -->
+	<canvas id="loading" width="200" height="200" >Loading</canvas>
+
+
+	<!-- Error message -->
+	<article id="error-box" style="display: none;">
+		<div class="centred" style="align-items: center;">
+			<div class="error-message"><span id="error-title" style="font-size: 20px;">Content not found</span><span id="error-message">Error message</span></div>
+		</div>
+	</article>
+	
+	
+	<article id="homepage" style="display:none">
+	
+		<!-- Main content -->
+		<div class="centred">
+			<p id="introduction">Ce site a pour but de répertorier des fonctions basiques utilisables dans les shaders.</br>Vous n'y trouverez pas de descriptions techniques exhaustives, mais plutôt des démonstrations visuelles conçues à des fins pédagogiques.</p>
+
+			<div class="horizontal" id="function-list">
+
+			<button class="function-box">
+				<div class="horizontal">
+					<div class="vertical" style="margin-right:10px;">
+						<h3>Sin</h3>
+						<p>Lorem ipsum</p>
+					</div>
+					<canvas id="example-canvas-id" width="150" height="150" class="shader-index-preview"></canvas>
+				</div>
+			</button>
+
+			</div>
+
+	
+			<div id="content-container">
+			</div>
+		</div>
+	</article>
+	
+
+	<!-- Function Page-->
+	<article id="page" style="display:none">
+		<div class="centred">
+
+			<!-- Page Content -->
+			<div class="vertical" id="page-content"></div>
+
+		</div>
+	</article>
+  
+
+	<!-- Example -->
+	<article id="example" style="display:none">
+
+		<div class="centred">
+
+			<!--Example Buttons-->
+			<div class="switch-field" id="example-buttons">
+				<input type="radio" id="button-2" name="button-group"><label for="button-2">Button</label></input>
+				<input type="radio" id="button-3" name="button-group"><label for="button-3">Button</label></input>
+				<input type="radio" id="button-4" name="button-group"><label for="button-4">Button</label></input>
+			</div>
+
+			<!--Example-->
+			<div class="example-box" id="example-box">						
+				<div class="horizontal" id="template-example">
+					<div class="vertical">
+						
+						<div class="horizontal">
+
+							<div class="vertical">
+								<!-- Example Properties -->
+								<div class='heading_2' id="properties-title">Propriétés</div>
+								<div class="shader-properties" id="example-properties"></div>
+							</div>
+
+							<!-- Example Canvas -->
+							<canvas id="example-canvas" width="200" height="200" class="shader-preview"></canvas>
+						</div>
+
+						<!-- Example Content -->
+						<div id="example-content-container">
+							<div class="divider" style="margin-top:15px; margin-bottom: 30px;"></div>
+							<div class='heading_2'>Explications</div>
+							<div class="vertical" id="example-content"></div>
+						</div>
+
+						<!-- Example Code -->
+						<div class="code-container">
+							<pre class="line-numbers" id="template-code"><code class="language-hlsl">example-code</code></pre>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</article>
+
+
+	<!-- Shader only canvas -->
+	<canvas id="shader-only-canvas" width="512" height="512" class="shader-preview"></canvas>
+
+
+  </body>
+</html>
