@@ -1,0 +1,18 @@
+.overlay-canvas
+{
+    background-color: transparent; 
+    position: fixed;
+    width: 100%;
+}
+
+.bubble-effect
+{
+    height: 150px;
+    width: 150px;
+    /* border-color: brown;
+    border-width: 1px;
+    border-style: solid;*/
+    position: absolute;
+    top: 660px;
+    left: 500px;
+}
