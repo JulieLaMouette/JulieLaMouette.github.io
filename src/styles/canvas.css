@@ -5,14 +5,19 @@
     width: 100%;
 }
 
+.effect
+{
+    height: 150px;
+    width: 150px;
+    position: absolute;
+}
+
 .bubble-effect
 {
     height: 150px;
     width: 150px;
-    /* border-color: brown;
-    border-width: 1px;
-    border-style: solid;*/
     position: absolute;
-    top: 580px;
-    right: 70%;
+     /* border-color: brown;
+    border-width: 2px;
+    border-style: solid; */
 }

@@ -1,24 +1,49 @@
+var renderer;
+
 AddEffects();
 
 function AddEffects()
 {
     const canvas = document.getElementById("overlay-canvas");
-    const test = document.getElementsByClassName("bubble-effect")[0];
+    
+    renderer = new ShaderRenderer(canvas);
+    
+    //Bubbles
+    const bubbles = document.getElementsByClassName("bubble-effect");
+    for (const bubble of bubbles) 
+    {
+        AddShaderAndMesh(bubble, 'bubbles', 'quad', 'bubbles', 'texture-atlas');
+    }
 
-    let renderer = new ShaderRenderer(canvas);
-
-    fetch('src/shaders/bubbles.shader')
-	.then(response => response.text())
-	.then(shader => 
-		{
-			let shaderData = new ShaderData(test, "test", shader, "src/img/texture-atlas.png");
-			renderer.AddRenderer(shaderData);
-		}
-	);
-
+    //Leaves
+    const leaves = document.getElementsByClassName("leaves-effect");
+    for (const leavesElement of leaves) 
+    {
+        AddShaderAndMesh(leavesElement, 'leaves-left', 'leaves', 'leaves', 'leaves');
+    }
 }
 
-function OnShaderCompiled()
+
+function AddShaderAndMesh
+(
+    htmlElement,
+    guid,
+	meshName,
+	shaderName,
+	textureName,
+	onReady
+)
 {
-    console.log("shader compiled");
+	Promise.all([
+		fetch('src/meshes/' + meshName + ".mesh").then(r => r.text()),
+		fetch('src/shaders/' + shaderName + ".shader").then(r => r.text())
+	])
+	.then(function OnLoaded(results)
+	{
+		let mesh = new MeshData(results[0]);
+		let shader = new ShaderData(results[1]);
+		let object = new ObjectData(htmlElement, guid, mesh, shader, 'src/img/' + textureName + '.png');
+        
+		renderer.AddRenderer(object);
+	});
 }

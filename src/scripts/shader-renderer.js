@@ -23,41 +23,65 @@ class ShaderRenderer {
         this.gl = canvas.getContext('webgl2', { preserveDrawingBuffer: true, alpha: true });
         if(!this.gl) return;
 
-        this.shaderData = [];
-        this.buffers = this.initBuffers(this.gl);
+        this.objectData = [];
 
         this.startTime = performance.now();
+
+        this.meshCache = new Map();
+        this.lastBoundMesh = null;
 
         requestAnimationFrame(this.Render);
     }
 
-    AddRenderer(shader) {
-        shader.Load(this.gl);
-        this.shaderData.push(shader);
+    AddRenderer(object) {
+        object.Load(this.gl);
+        this.objectData.push(object);
     }
 
-    initBuffers(gl) {
-        const positionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-            0,0,0, 1,0,0, 1,1,0, 0,1,0
-        ]), gl.STATIC_DRAW);
+    GetMesh(gl, meshData)
+    {
+        let gpuMesh = this.meshCache.get(meshData.Name)
 
-        const texBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-            0,0, 1,0, 1,1, 0,1
-        ]), gl.STATIC_DRAW);
+        if(!gpuMesh)
+        {
+            gpuMesh = new GPUMesh(gl, meshData)
+            this.meshCache.set(meshData.Name, gpuMesh)
+        }
 
-        const indexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,0,2,3]), gl.STATIC_DRAW);
-
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-        return {position: positionBuffer, textureCoord: texBuffer, indices: indexBuffer};
+        return gpuMesh
     }
+
+    BindMesh(gl, gpuMesh, programInfo)
+    {
+        if(this.lastBoundMesh === gpuMesh)
+            return
+
+        //Vertices
+        gl.bindBuffer(gl.ARRAY_BUFFER, gpuMesh.vertexBuffer)
+        gl.vertexAttribPointer(programInfo.attribLocations.position, 3, gl.FLOAT, false, 0, 0)
+        gl.enableVertexAttribArray(programInfo.attribLocations.position)
+
+        //UV1
+        gl.bindBuffer(gl.ARRAY_BUFFER, gpuMesh.uvBuffer)
+        gl.vertexAttribPointer(programInfo.attribLocations.uv1, 2, gl.FLOAT, false, 0, 0)
+        gl.enableVertexAttribArray(programInfo.attribLocations.uv1)
+
+        //UV2
+        gl.bindBuffer(gl.ARRAY_BUFFER, gpuMesh.uv2Buffer)
+        gl.vertexAttribPointer(programInfo.attribLocations.uv2, 2, gl.FLOAT, false, 0, 0)
+        gl.enableVertexAttribArray(programInfo.attribLocations.uv2)
+
+        //Color
+        gl.bindBuffer(gl.ARRAY_BUFFER, gpuMesh.colorBuffer)
+        gl.vertexAttribPointer(programInfo.attribLocations.color, 4, gl.FLOAT, false, 0, 0)
+        gl.enableVertexAttribArray(programInfo.attribLocations.color)
+
+        //Indices
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gpuMesh.indexBuffer)
+
+        this.lastBoundMesh = gpuMesh
+    }
+
 
     Render = () => {
         const gl = this.gl;
@@ -71,47 +95,41 @@ class ShaderRenderer {
 
         const time = (performance.now() - this.startTime) * 0.001;
 
-        for(let shader of this.shaderData) {
-            const bounds = shader.element.getBoundingClientRect();
+        this.lastBoundMesh = null
 
-            // UV mouse
+        for(let object of this.objectData)
+        {
+            const bounds = object.element.getBoundingClientRect()
+
             const mouseUV = [
                 (mouseX - bounds.x) / bounds.width,
                 1 - (mouseY - bounds.y) / bounds.height
-            ];
+            ]
 
-            // Scroll UV remap: scale scrollY to element height
-            smoothScroll += (scrollY - smoothScroll) * scrollLerp;
-            const scrollUV = scrollY / bounds.height;
-            const smoothScrollUV = smoothScroll / bounds.height;
+            smoothScroll += (scrollY - smoothScroll) * scrollLerp
+            const scrollUV = scrollY / bounds.height
+            const smoothScrollUV = smoothScroll / bounds.height
 
-            // Projection & model
-            const proj = mat4.create();
-            mat4.ortho(proj, 0, w, h, 0, -1, 1);
-            const model = mat4.create();
-            mat4.translate(model, model, [bounds.x, bounds.y, 0]);
-            mat4.scale(model, model, [bounds.width, bounds.height, 1]);
+            const proj = mat4.create()
+            mat4.ortho(proj, 0, w, h, 0, -1, 1)
 
-            // Set shader uniforms
-            shader.UpdateProperties(gl, time, mouseUV, scrollUV, smoothScrollUV);
+            const model = mat4.create()
+            mat4.translate(model, model, [bounds.x, bounds.y, 0])
+            mat4.scale(model, model, [bounds.width, bounds.height, 1])
 
-            // Draw quad
-            gl.useProgram(shader.programInfo.program);
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position);
-            gl.vertexAttribPointer(shader.programInfo.attribLocations.vertexPosition, 3, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(shader.programInfo.attribLocations.vertexPosition);
+            object.UpdateProperties(gl, time, mouseUV, scrollUV, smoothScrollUV)
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.textureCoord);
-            gl.vertexAttribPointer(shader.programInfo.attribLocations.textureCoord, 2, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(shader.programInfo.attribLocations.textureCoord);
+            gl.useProgram(object.programInfo.program)
 
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
+            const gpuMesh = this.GetMesh(gl, object.meshData)
+            this.BindMesh(gl, gpuMesh, object.programInfo)
 
-            gl.uniformMatrix4fv(shader.programInfo.uniformLocations.projectionMatrix, false, proj);
-            gl.uniformMatrix4fv(shader.programInfo.uniformLocations.modelViewMatrix, false, model);
+            gl.uniformMatrix4fv(object.programInfo.uniformLocations.projectionMatrix, false, proj)
+            gl.uniformMatrix4fv(object.programInfo.uniformLocations.modelViewMatrix, false, model)
 
-            gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+            gl.drawElements(gl.TRIANGLES, gpuMesh.indexCount, gpuMesh.indexType, 0)
         }
+
 
         requestAnimationFrame(this.Render);
     }
