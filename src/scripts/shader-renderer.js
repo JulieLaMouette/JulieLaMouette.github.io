@@ -17,9 +17,13 @@ window.addEventListener("scroll", () => {
 
 //--------------------------------------------------
 
-class ShaderRenderer {
-    constructor(canvas) {
+class ShaderRenderer 
+{
+
+    constructor(canvas) 
+    {
         this.canvas = canvas;
+
         this.gl = canvas.getContext('webgl2', { preserveDrawingBuffer: true, alpha: true });
         if(!this.gl) return;
 
@@ -101,8 +105,16 @@ class ShaderRenderer {
         {
             const bounds = object.element.getBoundingClientRect()
 
+            // compute parent offset
+            let parent = document.body
+            const parentRect = parent.getBoundingClientRect()
+
+            // position relative to parent
+            const relativeX = bounds.x - parentRect.x
+            const relativeY = bounds.y - parentRect.y
+
             const mouseUV = [
-                (mouseX - bounds.x) / bounds.width,
+                (mouseX - bounds.x) / bounds.width, // keep absolute mouse over element
                 1 - (mouseY - bounds.y) / bounds.height
             ]
 
@@ -114,7 +126,8 @@ class ShaderRenderer {
             mat4.ortho(proj, 0, w, h, 0, -1, 1)
 
             const model = mat4.create()
-            mat4.translate(model, model, [bounds.x, bounds.y, 0])
+            // use relative position for absolute canvas
+            mat4.translate(model, model, [relativeX, relativeY, 0])
             mat4.scale(model, model, [bounds.width, bounds.height, 1])
 
             object.UpdateProperties(gl, time, mouseUV, scrollUV, smoothScrollUV)
@@ -129,6 +142,7 @@ class ShaderRenderer {
 
             gl.drawElements(gl.TRIANGLES, gpuMesh.indexCount, gpuMesh.indexType, 0)
         }
+
 
 
         requestAnimationFrame(this.Render);
