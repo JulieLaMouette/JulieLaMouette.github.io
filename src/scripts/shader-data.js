@@ -13,9 +13,8 @@ class ShaderData
             uniform mat4 uModelViewMatrix;
             uniform mat4 uProjectionMatrix;
             uniform float time;
-            uniform vec2 mouseUV;
-            uniform float scrollUV;
-            uniform float smoothScrollUV;
+            uniform float4 mouseUV;
+            uniform float4 scrollUV;
             uniform float randomValue;
 
             // Description : Array and textureless GLSL 2D simplex noise function. -----------------

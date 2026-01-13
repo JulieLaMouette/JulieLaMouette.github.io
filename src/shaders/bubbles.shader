@@ -1,7 +1,6 @@
 // uniform float time;
-// uniform vec2 mouseUV;
-// uniform float scrollUV;
-// uniform float smoothScrollUV;
+// uniform float4 mouseUV;
+// uniform float4 scrollUV;
 // uniform float randomValue;
 // uniform sampler2D texture;
 
@@ -13,7 +12,7 @@ void VertexShader(inout float3 position, inout float2 uv1, inout float2 uv2, ino
 
 float4 FragmentShader(float2 uv)
 {
-    float scroll = smoothScrollUV * 0.4;
+    float scroll = scrollUV[0] * 0.4;
     float2 noiseUv = uv + time * 0.15;
 
     float2 texcoord = float2(uv.x, 1.0 - uv.y);

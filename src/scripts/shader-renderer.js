@@ -1,8 +1,12 @@
 //Track mouse & scroll -----------------------------------
 let mouseX = 0, mouseY = 0;
+let smoothMouseX = 0, smoothMouseY = 0;
 let scrollY = 0;
 let smoothScroll = 0; 
+let superSmoothScroll = 0; 
+let scrollDif = 0;
 const scrollLerp = 0.1;
+const mouseLerp = 0.1;
 
 // Track mouse
 window.addEventListener("mousemove", (e) => {
@@ -103,47 +107,60 @@ class ShaderRenderer
 
         for(let object of this.objectData)
         {
-            const bounds = object.element.getBoundingClientRect()
+            const bounds = object.element.getBoundingClientRect();
 
             // compute parent offset
-            let parent = document.body
-            const parentRect = parent.getBoundingClientRect()
+            let parent = document.body;
+            const parentRect = parent.getBoundingClientRect();
 
             // position relative to parent
-            const relativeX = bounds.x - parentRect.x
-            const relativeY = bounds.y - parentRect.y
+            const relativeX = bounds.x - parentRect.x;
+            const relativeY = bounds.y - parentRect.y;
+
+            //Smoothing - Scroll
+            scrollDif += (scrollY - superSmoothScroll) * 0.05;
+            smoothScroll += (scrollY - smoothScroll) * scrollLerp;
+            superSmoothScroll += scrollDif * 0.05;
+            scrollDif *= 0.96;
+
+            const scrollUV = [
+                scrollY / bounds.height, 
+                smoothScroll / bounds.height,
+                superSmoothScroll / bounds.height,
+            ];
+
+            //Smoothing - mouse
+            smoothMouseX += (mouseX - smoothMouseX) * mouseLerp
+            smoothMouseY += (mouseY - smoothMouseY) * mouseLerp
 
             const mouseUV = [
-                (mouseX - bounds.x) / bounds.width, // keep absolute mouse over element
-                1 - (mouseY - bounds.y) / bounds.height
-            ]
+                (mouseX - bounds.x) / bounds.width,
+                1 - (mouseY - bounds.y) / bounds.height,
+                (smoothMouseX - bounds.x) / bounds.width,
+                1 - (smoothMouseY - bounds.y) / bounds.height
+            ];
 
-            smoothScroll += (scrollY - smoothScroll) * scrollLerp
-            const scrollUV = scrollY / bounds.height
-            const smoothScrollUV = smoothScroll / bounds.height
 
-            const proj = mat4.create()
-            mat4.ortho(proj, 0, w, h, 0, -1, 1)
 
-            const model = mat4.create()
+            const proj = mat4.create();
+            mat4.ortho(proj, 0, w, h, 0, -1, 1);
+
+            const model = mat4.create();
             // use relative position for absolute canvas
-            mat4.translate(model, model, [relativeX, relativeY, 0])
-            mat4.scale(model, model, [bounds.width, bounds.height, 1])
+            mat4.translate(model, model, [relativeX, relativeY, 0]);
+            mat4.scale(model, model, [bounds.width, bounds.height, 1]);
 
-            object.UpdateProperties(gl, time, mouseUV, scrollUV, smoothScrollUV)
+            object.UpdateProperties(gl, time, mouseUV, scrollUV);
 
-            gl.useProgram(object.programInfo.program)
+            gl.useProgram(object.programInfo.program);
 
-            const gpuMesh = this.GetMesh(gl, object.meshData)
-            this.BindMesh(gl, gpuMesh, object.programInfo)
+            const gpuMesh = this.GetMesh(gl, object.meshData);
+            this.BindMesh(gl, gpuMesh, object.programInfo);
 
-            gl.uniformMatrix4fv(object.programInfo.uniformLocations.projectionMatrix, false, proj)
-            gl.uniformMatrix4fv(object.programInfo.uniformLocations.modelViewMatrix, false, model)
-
-            gl.drawElements(gl.TRIANGLES, gpuMesh.indexCount, gpuMesh.indexType, 0)
+            gl.uniformMatrix4fv(object.programInfo.uniformLocations.projectionMatrix, false, proj);
+            gl.uniformMatrix4fv(object.programInfo.uniformLocations.modelViewMatrix, false, model);
+            gl.drawElements(gl.TRIANGLES, gpuMesh.indexCount, gpuMesh.indexType, 0);
         }
-
-
 
         requestAnimationFrame(this.Render);
     }

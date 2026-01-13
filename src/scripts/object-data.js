@@ -43,27 +43,30 @@ class ObjectData
         };
 
         // Load texture if URL
-        if(this.textureUrl) {
+        if(this.textureUrl) 
+        {
             this.texture = this.loadTexture(gl, this.textureUrl);
         }
     }
 
-    UpdateProperties(gl, time, mouseUV, scrollUV, smoothScrollUV) {
+    UpdateProperties(gl, time, mouseUV, scrollUV) 
+    {
         gl.useProgram(this.shaderProgram);
         gl.uniform1f(this.programInfo.uniformLocations.time, time);
-        gl.uniform2f(this.programInfo.uniformLocations.mouseUV, mouseUV[0], mouseUV[1]);
-        gl.uniform1f(this.programInfo.uniformLocations.scrollUV, scrollUV);
-        gl.uniform1f(this.programInfo.uniformLocations.smoothScrollUV, smoothScrollUV);
+        gl.uniform4f(this.programInfo.uniformLocations.mouseUV, mouseUV[0], mouseUV[1], mouseUV[2], mouseUV[3]);
+        gl.uniform4f(this.programInfo.uniformLocations.scrollUV, scrollUV[0], scrollUV[1], scrollUV[2], 0.0);
         gl.uniform1f(this.programInfo.uniformLocations.randomValue, this.randomValue);
 
-        if(this.texture) {
+        if(this.texture) 
+        {
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             gl.uniform1i(this.programInfo.uniformLocations.uTexture, 0);
         }
     }
 
-    loadShader(gl, type, source) {
+    loadShader(gl, type, source) 
+    {
         const shader = gl.createShader(type);
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
@@ -72,7 +75,8 @@ class ObjectData
         return shader;
     }
 
-    loadTexture(gl, url) {
+    loadTexture(gl, url) 
+    {
         const texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
 

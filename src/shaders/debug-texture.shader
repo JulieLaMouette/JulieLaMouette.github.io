@@ -1,7 +1,6 @@
 // uniform float time;
-// uniform vec2 mouseUV;
-// uniform float scrollUV;
-// uniform float smoothScrollUV;
+// uniform float4 mouseUV;
+// uniform float4 scrollUV;
 // uniform float randomValue;
 // uniform sampler2D texture;
 

@@ -7,17 +7,10 @@
 
 .effect
 {
-    height: 150px;
-    width: 150px;
+    aspect-ratio: 1 / 1;
+    width: 20%;
     position: absolute;
-}
-
-.bubble-effect
-{
-    height: 150px;
-    width: 150px;
-    position: absolute;
-     /* border-color: brown;
+    /* border-color: brown;
     border-width: 2px;
     border-style: solid; */
 }
