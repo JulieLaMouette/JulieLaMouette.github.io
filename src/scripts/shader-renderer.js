@@ -118,10 +118,10 @@ class ShaderRenderer
             const relativeY = bounds.y - parentRect.y;
 
             //Smoothing - Scroll
-            scrollDif += (scrollY - superSmoothScroll) * 0.05;
+            scrollDif += (scrollY - superSmoothScroll) * 0.03;
             smoothScroll += (scrollY - smoothScroll) * scrollLerp;
-            superSmoothScroll += scrollDif * 0.05;
-            scrollDif *= 0.96;
+            superSmoothScroll += scrollDif * 0.03;
+            scrollDif *= 0.98;
 
             const scrollUV = [
                 scrollY / bounds.height, 

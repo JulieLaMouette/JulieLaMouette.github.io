@@ -11,7 +11,7 @@ void VertexShader(inout float3 position, inout float2 uv1, inout float2 uv2, ino
 
     float rotateFactor = noise12(float2(0, seed * 0.2 + rnd * 0.2 + time * 0.1)) * 0.3;
     float rotateFactor2 = noise12(float2(0, rnd + time * 0.43)) * 0.4;
-    float rotateFromScroll = scrollUV.x - scrollUV.z;
+    float rotateFromScroll = (scrollUV.x - scrollUV.z) * 0.3;
     // float shakeFactor = sin(rnd + time * 50.0) * 0.01;
 
 
