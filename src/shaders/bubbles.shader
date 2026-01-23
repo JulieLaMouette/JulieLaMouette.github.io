@@ -17,6 +17,7 @@ float4 FragmentShader(float2 uv)
 
     float2 texcoord = float2(uv.x, 1.0 - uv.y);
     texcoord.y -= scroll;
+    texcoord.y += time * 0.1;
     texcoord.xy -= float2(0.5, 0.5);
     texcoord.xy *= 0.2;
     texcoord.xy += float2(0.5, 0.5);

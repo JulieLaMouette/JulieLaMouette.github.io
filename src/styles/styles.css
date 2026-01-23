@@ -11,8 +11,16 @@ body {
 	margin: 0;
 	display: flex;
 	justify-content: center;
-	background-color: #003561;
+	background-color: #355193;
 }
+
+.title {
+	margin-top: 350px;
+	width: 55%;
+	position: relative;
+	overflow: hidden;
+}
+
 
 .scene {
 	position: relative;
